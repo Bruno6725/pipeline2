@@ -1,0 +1,28 @@
+node{
+ def mavenHome = tool name: 'maven3.9.6'
+ stage('1. cloneCode'){
+  git branch: 'main', credentialsId: 'gitHubCred', url: 'https://github.com/ayafor-code/javaWebApp.git'
+ }
+ stage('2. mavenBuild'){
+ //sh "/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven3.9.6/bin/mvn package"
+ sh "${mavenHome}/bin/mvn package" 
+ }
+ stage('3. codeQualityAnalysis'){}
+ stage('4. uploadArtifacts'){}
+ stage('5. deployToUAT'){
+  deploy adapters: [tomcat9(credentialsId: 'tomcatCred', path: '', url: 'http://3.128.168.57:8080/')], contextPath: null, war: 'target/*war'
+ }
+ stage('6. Manual Approval'){
+  sh "echo 'Please review and approve' "
+  timeout(time: 360 , unit: 'MINUTES')
+  {
+    input message: 'Application ready for deployment, Please review'
+  }
+ }
+ stage('7. deployToProd'){
+  deploy adapters: [tomcat9(credentialsId: 'tomcatProd', path: '', url: 'http://3.12.107.38:8080/')], contextPath: null, war: 'target/*war'
+ }
+ stage('8. Notification'){
+  slackSend channel: 'pipeline', message: 'DEPLOYMENT SUCCESSFUL'
+ }
+}

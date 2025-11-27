@@ -1,0 +1,21 @@
+node{
+def mavenHome = tool name: 'maven3.9.6'
+ stage('1. cloneCode'){
+  //git "https://github.com/ayafor-code/maven-employee-web-application.git"
+   git branch: 'main', credentialsId: 'gitHubCred', url: 'https://github.com/ayafor-code/javaWebApp.git'
+}
+ stage('2. mavenBuild'){
+ //sh "mvn package"
+ //sh "/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven3.9.6/bin/mvn package"
+ sh "${mavenHome}/bin/mvn package" 
+}
+ stage('3. codeQualityAnalysis'){
+  sh "${mavenHome}/bin/mvn sonar:sonar"
+  //edit the pom.xml file with SonarQube server credentils(propertiesTAG)
+}
+ stage('4. uploadArtifacts'){
+  sh "${mavenHome}/bin/mvn deploy"
+  //modify the distributionManagement tag in pom.xml
+}
+
+}
