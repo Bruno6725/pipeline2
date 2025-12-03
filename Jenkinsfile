@@ -39,7 +39,7 @@ pipeline {
         }
 
         // Stage 5: Deploy to Test Tomcat
-        stage('5. Deploy to Test Tomcat') {
+        stage('5. Deploy to Test Tomcat1') {
             steps {
                 echo "🚀 Deploying WAR to TEST Tomcat server..."
                 deploy adapters: [
